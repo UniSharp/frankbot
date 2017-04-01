@@ -67,6 +67,11 @@ robot.listen(/.*/, function (req, res) {
     return;
   }
 
+  if (msg.match(/frank\.cafe/i)) {
+    console.log("ignore frank.cafe");
+    return;
+  }
+
   msg = msg.replace(/@?frank:?/i, '').trim();
   console.log('got:"' + msg + '"');
 
