@@ -67,7 +67,7 @@ robot.listen(/.*/, function (req, res) {
     return;
   }
 
-  if (msg.match(/frank\.cafe/i)) {
+  if (msg.match(/\.cafe/i)) {
     console.log("ignore frank.cafe");
     return;
   }
