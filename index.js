@@ -1,4 +1,5 @@
 "use strict";
+const asana = require('asana');
 var https = require('https');
 var querystring = require('querystring');
 var SlackRobot = require('slack-robot');
@@ -10,6 +11,8 @@ var child = null;
 
 var $res = null;
 var $interval = null;
+
+var asanaClient = asana.Client.create().useAccessToken(process.env.ASANA_TOKEN);
 
 var Nancy = {
   'init': function() {
@@ -74,6 +77,21 @@ robot.listen(/.*/, function (req, res) {
 
   msg = msg.replace(/@?frank:?/i, '').trim();
   console.log('got:"' + msg + '"');
+
+  let reminderMatch = msg.match(/^提醒我(.*)/);
+  if (reminderMatch) {
+    let sender = req.from.name;
+    let reminderMsg = reminderMatch[1].trim();
+    let asanaTask = {
+      name: `(${sender}) 請記得${reminderMsg}`,
+      //tags: [88650505604939 /* v */],
+      //notes: `notes`,
+      projects: [154961323396368] // 工作看板
+    };
+    asanaClient.tasks.createInWorkspace(13451994895738 /* unisharp.com */, asanaTask);
+    $res.text("加到 asana 了，提醒 @" + sender + ' ' + reminderMsg).send();
+    return;
+  }
 
   if (req.message.value.mentioned != true) {
     if (req.to.type != 'dm') {
